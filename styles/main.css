@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+}
+
+body {
+  margin: 0;
+  background: #f7f8fc;
+  color: #202534;
+}
+
+.page-header {
+  background: #1f4fbd;
+  color: #ffffff;
+  padding: 1.25rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.4rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #d7deed;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(17, 24, 39, 0.07);
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product R&D Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Product R&D Tracker</h1>
+      <p>Beginner-friendly tracker for product development progress.</p>
+    </header>
+
+    <main class="layout">
+      <section class="card" aria-labelledby="dashboard-title">
+        <h2 id="dashboard-title">Dashboard (placeholder)</h2>
+        <p>
+          This area will show summary metrics such as total products, active work,
+          overdue items, and completion progress.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="products-title">
+        <h2 id="products-title">Products (placeholder)</h2>
+        <p>
+          This list will contain products with fields: name, stage, owner, due date,
+          priority, notes, and percent complete.
+        </p>
+        <div id="products-root"></div>
+      </section>
+    </main>
+
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
