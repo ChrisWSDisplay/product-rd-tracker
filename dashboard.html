@@ -24,18 +24,16 @@
           <span id="initiativeCount" class="tag"></span>
         </div>
         <div class="import-panel">
-          <h3>Import CSV from Google Sheets</h3>
+          <h3>Import CSV/TSV from Google Sheets</h3>
           <p class="import-help">
-            1) Export your sheet as CSV. 2) Choose file. 3) Map columns. 4) Click
-            "Apply mapping".
+            Use row 1 from the <strong>2026</strong> tab as your exact headers. Upload comma-separated
+            (.csv) or tab-separated (.tsv/.txt) files.
           </p>
           <label class="file-picker">
-            <span>Choose CSV file</span>
-            <input id="csvFileInput" type="file" accept=".csv,text/csv" />
+            <span>Choose CSV or TSV file</span>
+            <input id="csvFileInput" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" />
           </label>
-          <div id="mappingControls" class="mapping-grid"></div>
           <div class="import-actions">
-            <button id="applyMappingBtn" class="primary-btn" disabled>Apply mapping</button>
             <button id="resetDataBtn" class="secondary-btn">Reset sample data</button>
           </div>
           <p id="importStatus" class="import-status" role="status" aria-live="polite">
@@ -44,18 +42,7 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Project Status</th>
-                <th>Percentages</th>
-                <th>R&amp;D Channel</th>
-                <th>Test Location</th>
-                <th>Year Completed</th>
-                <th>Cost</th>
-                <th>Comments</th>
-              </tr>
-            </thead>
+            <thead id="initiativeTableHead"></thead>
             <tbody id="initiativeTableBody"></tbody>
           </table>
         </div>
