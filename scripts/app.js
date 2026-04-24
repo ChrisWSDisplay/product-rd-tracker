@@ -193,12 +193,31 @@ function parseCsv(text) {
   }
 
   const headers = rows[0];
-  const productIndex = findColumnIndex(headers, ['Product Name', 'Name', 'Product', 'Initiative']);
+  console.log('CSV headers detected:', headers);
+
+  const productIndex = findColumnIndex(headers, [
+    'Product Name',
+    'Product',
+    'Name',
+    'Item Name',
+    'SKU',
+    'Description',
+    'Initiative'
+  ]);
   if (productIndex < 0) {
-    throw new Error('CSV is missing a product-name column (Product Name, Name, or Product).');
+    throw new Error(
+      'CSV is missing a product-name column. Supported names: Product Name, Product, Name, Item Name, SKU, Description.'
+    );
   }
 
-  const stageIndex = findColumnIndex(headers, ['Stage', 'Status', 'Phase']);
+  const stageIndex = findColumnIndex(headers, [
+    'Status',
+    'Stage',
+    'Progress Status',
+    'Product Stage',
+    'Current Stage',
+    'Phase'
+  ]);
   const ownerIndex = findColumnIndex(headers, ['Owner', 'Lead', 'Product Owner', 'PM']);
   const dueDateIndex = findColumnIndex(headers, ['Due Date', 'Due', 'Target Date']);
   const priorityIndex = findColumnIndex(headers, ['Priority', 'Importance']);
@@ -209,6 +228,13 @@ function parseCsv(text) {
     'Completion',
     '% Complete'
   ]);
+
+  const firstDataRow = rows[1] || [];
+  const firstRowPreview = headers.reduce((preview, header, index) => {
+    preview[header] = firstDataRow[index] || '';
+    return preview;
+  }, {});
+  console.log('First imported row preview:', firstRowPreview);
 
   const products = rows.slice(1).map((cells) => ({
     name: cells[productIndex] || '',
@@ -225,7 +251,17 @@ function parseCsv(text) {
     throw new Error('CSV did not include any rows with a product name.');
   }
 
-  return importedProducts;
+  const mappingHints = [];
+  if (stageIndex < 0) {
+    mappingHints.push(
+      'Status/Stage column not recognized. Supported names: Status, Stage, Progress Status, Product Stage, Current Stage.'
+    );
+  }
+
+  return {
+    products: importedProducts,
+    mappingHints
+  };
 }
 
 function setStatus(message) {
@@ -242,10 +278,11 @@ if (csvUploadInput) {
     try {
       setStatus(`Reading ${file.name}...`);
       const text = await file.text();
-      const csvProducts = parseCsv(text);
+      const { products: csvProducts, mappingHints } = parseCsv(text);
       currentProducts = csvProducts;
       renderProducts(csvProducts);
-      setStatus(`Imported ${csvProducts.length} products from ${file.name}.`);
+      const mappingMessage = mappingHints.length ? ` ${mappingHints.join(' ')}` : '';
+      setStatus(`Imported ${csvProducts.length} products from ${file.name}.${mappingMessage}`);
     } catch (error) {
       console.error('CSV import failed:', {
         fileName: file.name,
@@ -257,5 +294,5 @@ if (csvUploadInput) {
   });
 }
 
-renderProducts(FALLBACK_PRODUCTS);
+renderProducts(currentProducts);
 setStatus('Showing sample products. Upload CSV to replace this table.');
