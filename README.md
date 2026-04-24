@@ -41,3 +41,21 @@ Not built yet:
 - editing/adding/deleting products
 
 These will be built gradually in future steps.
+
+## CSV import flow (Google Sheets export)
+
+The dashboard now supports importing a CSV into the product table:
+
+1. Open `dashboard.html` in your browser.
+2. In **Product Initiatives**, click **Choose CSV file** and select your exported Google Sheets CSV.
+3. Map your CSV columns to app fields (`Product name`, `Stage`, `Owner`, `Due date`, etc.).
+4. Click **Apply mapping**.
+
+Your imported rows are rendered in the table, KPI cards, stage breakdown, and milestone list.
+
+### Updating data later
+
+- Re-export the latest CSV from Google Sheets and import again with the same flow.
+- Click **Apply mapping** to overwrite current table data with the new import.
+- The imported result is saved in browser `localStorage`, so refreshes keep the latest import.
+- Use **Reset sample data** if you want to clear imported data and return to built-in examples.
