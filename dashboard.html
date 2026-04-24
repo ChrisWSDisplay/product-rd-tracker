@@ -23,6 +23,25 @@
           <h2>Product Initiatives</h2>
           <span id="initiativeCount" class="tag"></span>
         </div>
+        <div class="import-panel">
+          <h3>Import CSV from Google Sheets</h3>
+          <p class="import-help">
+            1) Export your sheet as CSV. 2) Choose file. 3) Map columns. 4) Click
+            "Apply mapping".
+          </p>
+          <label class="file-picker">
+            <span>Choose CSV file</span>
+            <input id="csvFileInput" type="file" accept=".csv,text/csv" />
+          </label>
+          <div id="mappingControls" class="mapping-grid"></div>
+          <div class="import-actions">
+            <button id="applyMappingBtn" class="primary-btn" disabled>Apply mapping</button>
+            <button id="resetDataBtn" class="secondary-btn">Reset sample data</button>
+          </div>
+          <p id="importStatus" class="import-status" role="status" aria-live="polite">
+            Using built-in sample data.
+          </p>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
