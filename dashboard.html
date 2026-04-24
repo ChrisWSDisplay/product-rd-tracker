@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product R&D Tracker Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Product R&D Tracker</p>
+          <h1>Dashboard</h1>
+        </div>
+        <button class="primary-btn">+ New Initiative</button>
+      </header>
+
+      <section class="kpi-grid" id="kpiGrid"></section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Product Initiatives</h2>
+          <span id="initiativeCount" class="tag"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Owner</th>
+                <th>Stage</th>
+                <th>Priority</th>
+                <th>Progress</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="initiativeTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="split-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Stage Distribution</h2>
+          </div>
+          <ul id="stageBreakdown" class="stage-list"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Upcoming Milestones</h2>
+          </div>
+          <ul id="milestoneList" class="timeline"></ul>
+        </article>
+      </section>
+    </div>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>
