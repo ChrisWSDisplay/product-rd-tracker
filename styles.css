@@ -295,3 +295,12 @@ th {
     grid-template-columns: 1fr;
   }
 }
+
+.inline-select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem;
+  background: #fff;
+  color: var(--text);
+}
