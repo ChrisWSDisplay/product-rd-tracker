@@ -3,65 +3,45 @@ const STORAGE_KEY = "prdTracker.initiatives";
 const sampleInitiatives = [
   {
     product: "Smart Inventory Assistant",
-    owner: "Maya Chen",
     stage: "Discovery",
-    priority: "High",
-    progress: 30,
-    updated: "Apr 21, 2026",
-    milestone: "Customer interviews complete",
-    dueDate: "May 2, 2026"
+    percentages: 30,
+    channel: "AI/ML",
+    location: "Austin Lab",
+    yearCompleted: "2026",
+    cost: "$120,000",
+    notes: "Customer interviews complete"
   },
   {
     product: "Mobile Checkout SDK",
-    owner: "Jordan Patel",
     stage: "Prototype",
-    priority: "Medium",
-    progress: 55,
-    updated: "Apr 22, 2026",
-    milestone: "Pilot integration with Partner A",
-    dueDate: "May 10, 2026"
+    percentages: 55,
+    channel: "Platform",
+    location: "San Jose",
+    yearCompleted: "2026",
+    cost: "$210,000",
+    notes: "Pilot integration with Partner A"
   },
   {
     product: "Supplier Risk Insights",
-    owner: "Nina Alvarez",
     stage: "Validation",
-    priority: "High",
-    progress: 72,
-    updated: "Apr 23, 2026",
-    milestone: "Model precision benchmark",
-    dueDate: "May 7, 2026"
-  },
-  {
-    product: "Demand Forecast API v2",
-    owner: "Leo Thompson",
-    stage: "Build",
-    priority: "Low",
-    progress: 88,
-    updated: "Apr 18, 2026",
-    milestone: "Performance load test",
-    dueDate: "May 15, 2026"
-  },
-  {
-    product: "Returns Intelligence Portal",
-    owner: "Sara Kim",
-    stage: "Launch Prep",
-    priority: "Medium",
-    progress: 93,
-    updated: "Apr 20, 2026",
-    milestone: "Enable customer-facing dashboard",
-    dueDate: "Apr 30, 2026"
+    percentages: 72,
+    channel: "Analytics",
+    location: "Chicago Test Center",
+    yearCompleted: "2026",
+    cost: "$180,000",
+    notes: "Model precision benchmark"
   }
 ];
 
 const productFields = [
-  { key: "product", label: "Product name", required: true },
-  { key: "owner", label: "Owner", required: false },
-  { key: "stage", label: "Stage", required: false },
-  { key: "priority", label: "Priority", required: false },
-  { key: "progress", label: "Progress %", required: false },
-  { key: "updated", label: "Updated date", required: false },
-  { key: "milestone", label: "Milestone", required: false },
-  { key: "dueDate", label: "Due date", required: false }
+  { key: "product", label: "Product", required: true },
+  { key: "stage", label: "Project Status", required: false },
+  { key: "percentages", label: "Percentages", required: false },
+  { key: "channel", label: "R&D Channel", required: false },
+  { key: "location", label: "Test Location", required: false },
+  { key: "yearCompleted", label: "Year Completed", required: false },
+  { key: "cost", label: "Cost", required: false },
+  { key: "notes", label: "Comments", required: false }
 ];
 
 let initiatives = loadSavedInitiatives();
@@ -99,18 +79,16 @@ function saveInitiatives() {
 function renderKpis() {
   const total = initiatives.length;
   const avgProgress = Math.round(
-    initiatives.reduce((sum, item) => sum + normalizeProgress(item.progress), 0) / total
+    initiatives.reduce((sum, item) => sum + normalizeProgress(item.percentages), 0) / (total || 1)
   );
-  const highPriority = initiatives.filter(
-    (item) => normalizePriority(item.priority) === "High"
-  ).length;
+  const totalCost = initiatives.reduce((sum, item) => sum + normalizeCost(item.cost), 0);
   const activeStages = new Set(initiatives.map((item) => item.stage || "Unknown")).size;
 
   const kpis = [
-    { label: "Total initiatives", value: total },
-    { label: "Average progress", value: `${avgProgress}%` },
-    { label: "High priority", value: highPriority },
-    { label: "Active stages", value: activeStages }
+    { label: "Total products", value: total },
+    { label: "Average completion", value: `${avgProgress}%` },
+    { label: "Total cost", value: `$${totalCost.toLocaleString("en-US")}` },
+    { label: "Active statuses", value: activeStages }
   ];
 
   document.getElementById("kpiGrid").innerHTML = kpis
@@ -126,22 +104,18 @@ function renderTable() {
 
   document.getElementById("initiativeTableBody").innerHTML = initiatives
     .map((item) => {
-      const priority = normalizePriority(item.priority);
-      const priorityClass = priority.toLowerCase();
-      const progress = normalizeProgress(item.progress);
+      const progress = normalizeProgress(item.percentages);
 
       return `
       <tr>
         <td>${escapeHtml(item.product || "Untitled product")}</td>
-        <td>${escapeHtml(item.owner || "Unassigned")}</td>
         <td>${escapeHtml(item.stage || "Unknown")}</td>
-        <td><span class="priority ${priorityClass}">${priority}</span></td>
-        <td>
-          <div class="progress-bar" aria-label="Progress for ${escapeHtml(item.product || "product")}">
-            <div class="progress-fill" style="width: ${progress}%"></div>
-          </div>
-        </td>
-        <td>${escapeHtml(item.updated || "—")}</td>
+        <td>${progress}%</td>
+        <td>${escapeHtml(item.channel || "—")}</td>
+        <td>${escapeHtml(item.location || "—")}</td>
+        <td>${escapeHtml(item.yearCompleted || "—")}</td>
+        <td>${escapeHtml(item.cost || "—")}</td>
+        <td>${escapeHtml(item.notes || "")}</td>
       </tr>
     `;
     })
@@ -165,15 +139,15 @@ function renderStageBreakdown() {
 
 function renderMilestones() {
   const sorted = [...initiatives].sort((a, b) => {
-    const dateA = asDate(a.dueDate);
-    const dateB = asDate(b.dueDate);
-    return dateA - dateB;
+    const yearA = Number.parseInt(a.yearCompleted, 10) || Number.MAX_SAFE_INTEGER;
+    const yearB = Number.parseInt(b.yearCompleted, 10) || Number.MAX_SAFE_INTEGER;
+    return yearA - yearB;
   });
 
   document.getElementById("milestoneList").innerHTML = sorted
     .map(
       (item) =>
-        `<li class="timeline-item"><strong>${escapeHtml(item.milestone || "No milestone provided")}</strong><p>${escapeHtml(item.product || "Untitled")} · Due ${escapeHtml(item.dueDate || "TBD")}</p></li>`
+        `<li class="timeline-item"><strong>${escapeHtml(item.product || "Untitled")}</strong><p>${escapeHtml(item.stage || "Unknown")} · ${normalizeProgress(item.percentages)}% · ${escapeHtml(item.yearCompleted || "Year TBD")}</p></li>`
     )
     .join("");
 }
@@ -243,8 +217,6 @@ function buildMappingControls(headers) {
         )
       ].join("");
 
-      const guessedHeader = guessHeader(headers, field.key);
-
       return `
         <label for="map-${field.key}">
           ${field.label}${field.required ? " *" : ""}
@@ -253,7 +225,6 @@ function buildMappingControls(headers) {
           </select>
         </label>
       `;
-      // selection is applied after rendering
     })
     .join("");
 
@@ -272,13 +243,13 @@ function buildMappingControls(headers) {
 function guessHeader(headers, fieldKey) {
   const aliases = {
     product: ["product", "product name", "name", "initiative"],
-    owner: ["owner", "lead", "pm", "product owner"],
-    stage: ["stage", "status", "phase"],
-    priority: ["priority", "importance"],
-    progress: ["progress", "percent complete", "completion", "% complete"],
-    updated: ["updated", "last updated", "updated at"],
-    milestone: ["milestone", "next milestone", "goal"],
-    dueDate: ["due", "due date", "target date", "deadline"]
+    stage: ["project status", "status", "stage", "phase"],
+    percentages: ["percentages", "percent complete", "progress", "completion", "% complete"],
+    channel: ["r&d channel", "rd channel", "channel", "category"],
+    location: ["test location", "location", "site"],
+    yearCompleted: ["year completed", "completed year", "year"],
+    cost: ["cost", "budget", "amount"],
+    notes: ["comments", "notes", "note", "description"]
   };
 
   const normalizedHeaders = headers.map((header) => ({
@@ -312,7 +283,7 @@ function applyMapping() {
   const mapping = getMapping();
 
   if (!mapping.product) {
-    setImportStatus("Please map at least the Product name field.", true);
+    setImportStatus("Please map at least the Product field.", true);
     return;
   }
 
@@ -328,7 +299,9 @@ function applyMapping() {
   initiatives = mapped;
   saveInitiatives();
   renderAll();
-  setImportStatus(`Imported ${mapped.length} rows from CSV and saved in your browser.`);
+  setImportStatus(
+    `Imported ${mapped.length} rows from CSV. Sample data has been replaced in the table.`
+  );
 }
 
 function mapRowToInitiative(row, mapping, headers) {
@@ -341,26 +314,15 @@ function mapRowToInitiative(row, mapping, headers) {
     return index >= 0 ? row[index] || "" : "";
   };
 
-  const product = valueFor("product");
-  const owner = valueFor("owner") || "Unassigned";
-  const stage = valueFor("stage") || "Unknown";
-  const priority = normalizePriority(valueFor("priority"));
-  const progress = normalizeProgress(valueFor("progress"));
-  const dueDateRaw = valueFor("dueDate");
-  const dueDate = dueDateRaw || "TBD";
-  const milestone = valueFor("milestone") || "No milestone provided";
-  const updatedRaw = valueFor("updated");
-  const updated = updatedRaw || new Date().toLocaleDateString("en-US");
-
   return {
-    product,
-    owner,
-    stage,
-    priority,
-    progress,
-    updated,
-    milestone,
-    dueDate
+    product: valueFor("product"),
+    stage: valueFor("stage") || "Unknown",
+    percentages: normalizeProgress(valueFor("percentages")),
+    channel: valueFor("channel"),
+    location: valueFor("location"),
+    yearCompleted: valueFor("yearCompleted"),
+    cost: valueFor("cost"),
+    notes: valueFor("notes")
   };
 }
 
@@ -372,15 +334,14 @@ function normalizeProgress(value) {
   return Math.min(100, Math.max(0, Math.round(number)));
 }
 
-function normalizePriority(value) {
-  const normalized = String(value || "").trim().toLowerCase();
-  if (normalized === "high") {
-    return "High";
+function normalizeCost(value) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
   }
-  if (normalized === "low") {
-    return "Low";
-  }
-  return "Medium";
+
+  const cleaned = String(value || "").replace(/[^0-9.-]/g, "");
+  const parsed = Number.parseFloat(cleaned);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function asDate(value) {
@@ -425,7 +386,7 @@ csvFileInput.addEventListener("change", async (event) => {
   buildMappingControls(csvHeaders);
   applyMappingBtn.disabled = false;
   setImportStatus(
-    `Loaded "${file.name}". Map columns and click "Apply mapping" to refresh the table.`
+    `Loaded "${file.name}". Mapping was auto-suggested; click \"Apply mapping\" to replace sample data.`
   );
 });
 
