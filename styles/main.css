@@ -63,6 +63,32 @@ body {
   color: #2f3d67;
 }
 
+.debug-box {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #d7deed;
+  border-radius: 8px;
+  background: #f9fbff;
+}
+
+.debug-box h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+}
+
+.debug-box p {
+  margin: 0.35rem 0;
+}
+
+.debug-box pre {
+  margin: 0.35rem 0 0;
+  overflow-x: auto;
+  background: #eef3ff;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: 0.82rem;
+}
+
 .table-header h2 {
   margin-top: 0;
 }
@@ -88,51 +114,4 @@ td {
 th {
   background: #f4f6fd;
   font-size: 0.92rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.badge-stage {
-  background: #ecf2ff;
-  color: #2e4c94;
-}
-
-.badge-high {
-  background: #ffe6e6;
-  color: #9d2222;
-}
-
-.badge-medium {
-  background: #fff6de;
-  color: #8a5f05;
-}
-
-.badge-low {
-  background: #e6f8ea;
-  color: #166534;
-}
-
-.progress-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.progress-track {
-  width: 120px;
-  height: 10px;
-  border-radius: 99px;
-  background: #e6ebf8;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4c8cf6, #1f4fbd);
 }

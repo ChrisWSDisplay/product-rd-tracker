@@ -9,21 +9,22 @@
   <body>
     <header class="page-header">
       <h1>Product R&D Tracker</h1>
-      <p>Upload a CSV or start with sample products to track delivery progress.</p>
+      <p>Upload your Google Sheet export and keep row 1 headers exactly as-is.</p>
     </header>
 
     <main class="layout">
       <section class="card" aria-labelledby="import-title">
         <h2 id="import-title">Import Products</h2>
         <p class="subtle-text">
-          Supports common headers like Product Name/Name, Stage, Owner, Due Date, Priority,
-          Notes, Percent Complete, and Progress.
+          Required headers (in table order): Year Completed, Product, R&amp;D Channel, Test Location,
+          Project Status, Percentages, Cost. CSV and TSV are supported.
         </p>
         <label class="upload-control" for="csv-upload">
-          <span>Choose CSV File</span>
-          <input id="csv-upload" type="file" accept=".csv,text/csv" />
+          <span>Choose CSV or TSV File</span>
+          <input id="csv-upload" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" />
         </label>
         <p id="import-status" class="import-status" role="status" aria-live="polite"></p>
+        <div id="import-debug" class="debug-box" aria-live="polite"></div>
       </section>
 
       <section class="card" aria-labelledby="products-title">
