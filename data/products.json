@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Example Product",
+    "stage": "Discovery",
+    "owner": "Unassigned",
+    "dueDate": "2026-05-31",
+    "priority": "Medium",
+    "notes": "Starter example record.",
+    "percentComplete": 10
+  }
+]
