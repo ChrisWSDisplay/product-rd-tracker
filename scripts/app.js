@@ -31,6 +31,7 @@ const FALLBACK_PRODUCTS = [
 const productsRoot = document.getElementById('products-root');
 const csvUploadInput = document.getElementById('csv-upload');
 const importStatus = document.getElementById('import-status');
+let currentProducts = [...FALLBACK_PRODUCTS];
 
 function escapeHtml(value = '') {
   return String(value)
@@ -121,35 +122,110 @@ function renderProducts(products) {
   `;
 }
 
-function parseCsv(text) {
-  const lines = text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
+function normalizeHeaderName(header) {
+  return String(header || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
 
-  if (lines.length < 2) {
-    return [];
+function findColumnIndex(headers, aliases) {
+  const normalizedAliases = aliases.map((alias) => normalizeHeaderName(alias));
+  return headers.findIndex((header) => normalizedAliases.includes(normalizeHeaderName(header)));
+}
+
+function parseCsvRows(text) {
+  const rows = [];
+  let currentRow = [];
+  let currentCell = '';
+  let insideQuotes = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const character = text[index];
+    const nextCharacter = text[index + 1];
+
+    if (character === '"') {
+      if (insideQuotes && nextCharacter === '"') {
+        currentCell += '"';
+        index += 1;
+      } else {
+        insideQuotes = !insideQuotes;
+      }
+      continue;
+    }
+
+    if (character === ',' && !insideQuotes) {
+      currentRow.push(currentCell.trim());
+      currentCell = '';
+      continue;
+    }
+
+    if ((character === '\n' || character === '\r') && !insideQuotes) {
+      if (character === '\r' && nextCharacter === '\n') {
+        index += 1;
+      }
+      currentRow.push(currentCell.trim());
+      rows.push(currentRow);
+      currentRow = [];
+      currentCell = '';
+      continue;
+    }
+
+    currentCell += character;
   }
 
-  const headers = lines[0].split(',').map((header) => header.trim());
+  if (currentCell.length > 0 || currentRow.length > 0) {
+    currentRow.push(currentCell.trim());
+    rows.push(currentRow);
+  }
 
-  return lines.slice(1).map((line) => {
-    const values = line.split(',').map((value) => value.trim());
-    const row = {};
-    headers.forEach((header, index) => {
-      row[header] = values[index] || '';
-    });
+  if (insideQuotes) {
+    throw new Error('CSV contains an unmatched quote.');
+  }
 
-    if (!row.dueDate && row['due date']) {
-      row.dueDate = row['due date'];
-    }
+  return rows.filter((row) => row.some((cell) => cell !== ''));
+}
 
-    if (!row.percentComplete && row['percent complete']) {
-      row.percentComplete = row['percent complete'];
-    }
+function parseCsv(text) {
+  const rows = parseCsvRows(text);
 
-    return row;
-  });
+  if (rows.length < 2) {
+    throw new Error('CSV must include a header row and at least one data row.');
+  }
+
+  const headers = rows[0];
+  const productIndex = findColumnIndex(headers, ['Product Name', 'Name', 'Product', 'Initiative']);
+  if (productIndex < 0) {
+    throw new Error('CSV is missing a product-name column (Product Name, Name, or Product).');
+  }
+
+  const stageIndex = findColumnIndex(headers, ['Stage', 'Status', 'Phase']);
+  const ownerIndex = findColumnIndex(headers, ['Owner', 'Lead', 'Product Owner', 'PM']);
+  const dueDateIndex = findColumnIndex(headers, ['Due Date', 'Due', 'Target Date']);
+  const priorityIndex = findColumnIndex(headers, ['Priority', 'Importance']);
+  const notesIndex = findColumnIndex(headers, ['Notes', 'Note', 'Description']);
+  const progressIndex = findColumnIndex(headers, [
+    'Percent Complete',
+    'Progress',
+    'Completion',
+    '% Complete'
+  ]);
+
+  const products = rows.slice(1).map((cells) => ({
+    name: cells[productIndex] || '',
+    stage: stageIndex >= 0 ? (cells[stageIndex] || '') : '',
+    owner: ownerIndex >= 0 ? (cells[ownerIndex] || '') : '',
+    dueDate: dueDateIndex >= 0 ? (cells[dueDateIndex] || '') : '',
+    priority: priorityIndex >= 0 ? (cells[priorityIndex] || '') : '',
+    notes: notesIndex >= 0 ? (cells[notesIndex] || '') : '',
+    percentComplete: progressIndex >= 0 ? (cells[progressIndex] || '') : ''
+  }));
+
+  const importedProducts = products.filter((product) => product.name.trim().length > 0);
+  if (!importedProducts.length) {
+    throw new Error('CSV did not include any rows with a product name.');
+  }
+
+  return importedProducts;
 }
 
 function setStatus(message) {
@@ -164,21 +240,19 @@ if (csvUploadInput) {
     if (!file) return;
 
     try {
+      setStatus(`Reading ${file.name}...`);
       const text = await file.text();
       const csvProducts = parseCsv(text);
-
-      if (!csvProducts.length) {
-        setStatus('CSV did not include data rows. Showing sample products instead.');
-        renderProducts(FALLBACK_PRODUCTS);
-        return;
-      }
-
+      currentProducts = csvProducts;
       renderProducts(csvProducts);
       setStatus(`Imported ${csvProducts.length} products from ${file.name}.`);
     } catch (error) {
-      console.error(error);
-      setStatus('Could not read that CSV file. Showing sample products instead.');
-      renderProducts(FALLBACK_PRODUCTS);
+      console.error('CSV import failed:', {
+        fileName: file.name,
+        error
+      });
+      setStatus(`Could not import ${file.name}. Please check the CSV format and try again.`);
+      renderProducts(currentProducts);
     }
   });
 }
