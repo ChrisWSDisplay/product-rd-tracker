@@ -25,7 +25,7 @@ body {
   grid-template-columns: 1fr;
   gap: 1rem;
   padding: 1rem;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -35,4 +35,104 @@ body {
   border-radius: 10px;
   padding: 1rem;
   box-shadow: 0 2px 6px rgba(17, 24, 39, 0.07);
+}
+
+.subtle-text {
+  margin-top: 0;
+  color: #4f5a7d;
+}
+
+.upload-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #eef3ff;
+  border: 1px dashed #6f8fe5;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.upload-control input {
+  font: inherit;
+}
+
+.import-status {
+  margin: 0.75rem 0 0;
+  color: #2f3d67;
+}
+
+.table-header h2 {
+  margin-top: 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e5e9f5;
+  text-align: left;
+  padding: 0.6rem;
+  vertical-align: top;
+}
+
+th {
+  background: #f4f6fd;
+  font-size: 0.92rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.badge-stage {
+  background: #ecf2ff;
+  color: #2e4c94;
+}
+
+.badge-high {
+  background: #ffe6e6;
+  color: #9d2222;
+}
+
+.badge-medium {
+  background: #fff6de;
+  color: #8a5f05;
+}
+
+.badge-low {
+  background: #e6f8ea;
+  color: #166534;
+}
+
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.progress-track {
+  width: 120px;
+  height: 10px;
+  border-radius: 99px;
+  background: #e6ebf8;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4c8cf6, #1f4fbd);
 }
